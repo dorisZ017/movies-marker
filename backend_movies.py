@@ -1,12 +1,16 @@
-
-from elasticsearch import Elasticsearch
+import elasticsearch
 from elasticsearch_dsl import Search
+import utils
+
+es = elasticsearch.Elasticsearch(["http://localhost:9200"])
+
+utils.es_setup(es, "filename")  # TODO filename
 
 
 def search_movies(search):
-    es = Elasticsearch()
     res = search.using(es).index("movies").execute()
     return res
+
 
 def build_search(title=None, actor=None, genre=None, year=None):
     s = Search()
@@ -24,4 +28,3 @@ def build_search(title=None, actor=None, genre=None, year=None):
 def filter_movies(title=None, actor=None, genre=None, year=None):
     search = build_search(title, actor, genre, year)
     return search_movies(search)
-
