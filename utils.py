@@ -37,12 +37,15 @@ def get_imdb_poster(imdb_url):
     return ""
 
 
-def es_setup(es, filename=""):
+def es_setup(es, filename="", overwrite=False):
     try:
         es.indices.create("movies")
     except elasticsearch.exceptions.RequestError as ex:
         if ex.error == 'resource_already_exists_exception':
-            return
+            if overwrite:
+                es.indices.delete("movies")
+            else:
+                return
         else:
             raise ex
     if filename:
