@@ -1,6 +1,7 @@
 import requests
 import re
 import elasticsearch
+from elasticsearch_dsl import Search
 import csv
 
 API_KEY = "dcfd9cf8"
@@ -50,6 +51,19 @@ def es_setup(es, filename="", overwrite=False):
             raise ex
     if filename:
         insert_movies(es, filename)
+
+
+def build_search(title=None, actor=None, genre=None, year=None):
+    s = Search()
+    if title:
+        s = s.query("wildcard", title=f"*{title}*")
+    if actor:
+        s = s.query("wildcard", actors=f"*{actor}*")
+    if genre:
+        s = s.query("wildcard", genre=f"*{genre}*")
+    if year:
+        s = s.query("match", year=year)
+    return s
 
 
 def insert_movies(es, filename):
