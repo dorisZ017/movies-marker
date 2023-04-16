@@ -2,10 +2,14 @@ import elasticsearch
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import utils
+import yaml
 
-es = elasticsearch.Elasticsearch(["http://localhost:9200"], timout=30)
+with open("config.yml") as f:
+    config = yaml.safe_load(f)
+    API_KEY = config["API_KEY"]
+    host = config["ES_HOST"]
 
-utils.es_setup(es, "")  # TODO filename
+es = elasticsearch.Elasticsearch([host], timout=30)
 
 app = Flask(__name__)
 CORS(app)
@@ -24,9 +28,20 @@ def search():
     genre = request.args.get("genre")
     year = request.args.get("year")
 
-    movies = search_movies(title, actor, genre, year)
+    res = search_movies(title, actor, genre, year)
+    try:
+        movies = res.hits.hits
+    except Exception:
+        return jsonify([])
 
-    return jsonify(movies.hits.hits)
+    for movie in movies:
+        try:
+            poster_url = utils.get_imdb_poster(movie["_source"].imdb_url, API_KEY)
+            movie["_source"]["poster_url"] = poster_url
+        except Exception:
+            movie["_source"]["poster_url"] = ""
+
+    return jsonify(movies)
 
 
 if __name__ == "__main__":

@@ -1,0 +1,6 @@
+API_KEY:
+  dcfd9cf8
+MOVIE_DATA_PATH:
+  /Users/doriszhou/movie_metadata.csv
+ES_HOST:
+  "http://localhost:9200"
