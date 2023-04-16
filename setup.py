@@ -12,7 +12,7 @@ with open("config.yml") as f:
     es_host = config["ES_HOST"]
     data_file = config["MOVIE_DATA_PATH"]
 
-es = elasticsearch.Elasticsearch(["es_host"], timout=30)
+es = elasticsearch.Elasticsearch([es_host], timout=30)
 
 try:
     es.indices.create("movies")
