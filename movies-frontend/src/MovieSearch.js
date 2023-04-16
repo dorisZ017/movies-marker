@@ -58,11 +58,11 @@ const MovieSearch = () => {
       <div>
         {movies.map(movie => (
           <div key={movie._id}>
-            // <img src={movie._source.poster_url} alt={movie._source.title} /> TODO
+            <img src={movie._source.poster_url} alt={movie._source.title} />
             <h2>{movie._source.title}</h2>
             <p>Actors: {movie._source.actors}</p>
             <p>Genre: {movie._source.genre}</p>
-            <p>Release Year: {movie._source.year}</p>
+            <p>Release Year: {movie._source.release_year}</p>
           </div>
         ))}
       </div>

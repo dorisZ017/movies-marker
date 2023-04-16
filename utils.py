@@ -1,10 +1,7 @@
 import requests
 import re
-import elasticsearch
 from elasticsearch_dsl import Search
 import csv
-
-API_KEY = "dcfd9cf8"
 
 
 def get_id(imdb_url):
@@ -14,43 +11,29 @@ def get_id(imdb_url):
     return ""
 
 
-def parse_and_fetch(imdb_url):
+def parse_and_fetch(imdb_url, api_key):
     id = get_id(imdb_url)
     if id:
         params = {
-            "apikey": API_KEY,
+            "apikey": api_key,
             "i": id
         }
         resp = requests.get("http://www.omdbapi.com/", params)
+        if resp.status_code != 200:
+            raise Exception(f"Failed to fetch movie info {resp.text}")
         return resp
     else:
         return None
 
 
-def get_imdb_poster(imdb_url):
-    resp = parse_and_fetch(imdb_url)
-    if resp:
-        try:
-            poster_url = resp.json()["Poster"]
-            return poster_url
-        except Exception as ex:
-            return ""
-    return ""
-
-
-def es_setup(es, filename="", overwrite=False):
+def get_imdb_poster(imdb_url, api_key):
     try:
-        es.indices.create("movies")
-    except elasticsearch.exceptions.RequestError as ex:
-        if ex.error == 'resource_already_exists_exception':
-            if overwrite:
-                es.indices.delete("movies")
-            else:
-                return
-        else:
-            raise ex
-    if filename:
-        insert_movies(es, filename)
+        resp = parse_and_fetch(imdb_url, api_key)
+        poster_url = resp.json()["Poster"]
+        return poster_url
+    except Exception as ex:
+        print(ex)
+        return ""
 
 
 def build_search(title=None, actor=None, genre=None, year=None):
