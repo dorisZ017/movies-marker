@@ -30,15 +30,16 @@ def search():
 
     res = search_movies(title, actor, genre, year)
     try:
-        movies = res.hits.hits
+        movies = [x.to_dict() for x in res.hits.hits]
     except Exception:
         return jsonify([])
 
     for movie in movies:
         try:
-            poster_url = utils.get_imdb_poster(movie["_source"].imdb_url, API_KEY)
+            poster_url = utils.get_imdb_poster(movie["_source"]["imdb_url"], API_KEY)
             movie["_source"]["poster_url"] = poster_url
-        except Exception:
+        except Exception as ex:
+            print(ex)
             movie["_source"]["poster_url"] = ""
 
     return jsonify(movies)

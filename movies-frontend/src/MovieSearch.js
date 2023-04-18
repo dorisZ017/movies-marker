@@ -22,7 +22,7 @@ const MovieSearch = () => {
           year: year
         }
       });
-      setMovies(res.data.hits.hits);
+      setMovies(res.data);
     };
 
     if (title || actor || genre || year) {
