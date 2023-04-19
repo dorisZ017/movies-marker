@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import './MovieSearch.css';
 
 const MovieSearch = () => {
   const [title, setTitle] = useState("");
@@ -8,33 +9,25 @@ const MovieSearch = () => {
   const [year, setYear] = useState("");
   const [movies, setMovies] = useState([]);
 
-  useEffect(() => {
-    const searchMovies = async () => {
-      console.log("searchMovies")
-      const res = await axios.get("http://localhost:5000/search", {
-        proxy: {
-          host: 'cors-proxy.com',
-        },
-        params: {
-          title: title,
-          actor: actor,
-          genre: genre,
-          year: year
-        }
-      });
-      setMovies(res.data);
-    };
-
-    if (title || actor || genre || year) {
-      searchMovies();
-    } else {
-      setMovies([]);
-    }
-  }, [title, actor, genre, year]);
+  const handleSearch = async (event) => {
+    event.preventDefault();
+    const res = await axios.get("http://localhost:5000/search", {
+      proxy: {
+        host: 'cors-proxy.com',
+      },
+      params: {
+        title: title,
+        actor: actor,
+        genre: genre,
+        year: year
+      }
+    });
+    setMovies(res.data);
+  };
 
   return (
     <div>
-      <form>
+      <form onSubmit={handleSearch}>
         <label>
           Title:
           <input type="text" value={title} onChange={event => setTitle(event.target.value)} />
@@ -54,6 +47,8 @@ const MovieSearch = () => {
           Release Year:
           <input type="text" value={year} onChange={event => setYear(event.target.value)} />
         </label>
+        <br />
+        <button type="submit">Search</button>
       </form>
       <div>
         {movies.map(movie => (
@@ -61,7 +56,7 @@ const MovieSearch = () => {
             <img src={movie._source.poster_url} alt={movie._source.title} />
             <h2>{movie._source.title}</h2>
             <p>Actors: {movie._source.actors}</p>
-            <p>Genre: {movie._source.genre}</p>
+            <p>Genres: {movie._source.genres}</p>
             <p>Release Year: {movie._source.release_year}</p>
           </div>
         ))}
