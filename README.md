@@ -24,10 +24,11 @@ Unit tests: `movies_test.py`
 Run `pip install <package name>` as needed`
 
 ## Frontend
-TODO
+`movies-frontend/src/MovieSearch.js` for UI and handling search
 
 ## Start the application:
 ```
+python backend_movies.py
 cd movies-frontend
 npm start
 ```
