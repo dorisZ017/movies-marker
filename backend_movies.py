@@ -15,12 +15,6 @@ app = Flask(__name__)
 CORS(app)
 
 
-def search_movies(title=None, actor=None, genre=None, year=None):
-    search = utils.build_search(title, actor, genre, year)
-    res = search.using(es).index("movies").execute()
-    return res
-
-
 @app.route("/search", methods=["GET"])
 def search():
     title = request.args.get("title")
@@ -28,19 +22,8 @@ def search():
     genre = request.args.get("genre")
     year = request.args.get("year")
 
-    res = search_movies(title, actor, genre, year)
-    try:
-        movies = [x.to_dict() for x in res.hits.hits]
-    except Exception:
-        return jsonify([])
-
-    for movie in movies:
-        try:
-            poster_url = utils.get_imdb_poster(movie["_source"]["imdb_url"], API_KEY)
-            movie["_source"]["poster_url"] = poster_url
-        except Exception as ex:
-            print(ex)
-            movie["_source"]["poster_url"] = ""
+    resp = utils.search_movies(es, title, actor, genre, year)
+    movies = utils.parse_movie_list(resp, API_KEY)
 
     return jsonify(movies)
 
