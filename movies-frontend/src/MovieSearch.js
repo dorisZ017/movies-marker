@@ -9,7 +9,7 @@ const MovieSearch = () => {
   const [year, setYear] = useState("");
   const [movies, setMovies] = useState([]);
   const [selectedMovie, setSelectedMovie] = useState(null);
-  const [operation, setOperation] = useState("");
+  const [operation, setOperation] = useState("like");
   const [operationInput, setOperationInput] = useState("");
   const [selectedOperation, setSelectedOperation] = useState("");
   const [viewOp, setViewOp] = useState("")
@@ -56,50 +56,13 @@ const MovieSearch = () => {
     }
   };
 
-
-  const handleViewLiked = async (event) => {
+  const handleView = operation => async(event) => {
     const res = await axios.get("http://localhost:5000/get_movies", {
       proxy: {
         host: "cors-proxy.com",
       },
       params: {
-        operation: "like",
-      }
-    });
-    setOpsMovies(res.data);
-  };
-
-  const handleViewBookmarked = async (event) => {
-    const res = await axios.get("http://localhost:5000/get_movies", {
-      proxy: {
-        host: "cors-proxy.com",
-      },
-      params: {
-        operation: "bookmark"
-      }
-    });
-    setOpsMovies(res.data);
-  };
-
-  const handleViewRated = async (event) => {
-    const res = await axios.get("http://localhost:5000/get_movies", {
-      proxy: {
-        host: "cors-proxy.com",
-      },
-      params: {
-        operation: "rate"
-      }
-    });
-    setOpsMovies(res.data);
-  };
-
-  const handleViewReviewed = async (event) => {
-    const res = await axios.get("http://localhost:5000/get_movies", {
-      proxy: {
-        host: "cors-proxy.com",
-      },
-      params: {
-        operation: "review"
+        operation: operation,
       }
     });
     setOpsMovies(res.data);
@@ -108,6 +71,7 @@ const MovieSearch = () => {
 
   return (
     <div>
+      <h2>Search Movies</h2>
       <form onSubmit={handleSearch}>
         <label>
           Title:
@@ -132,34 +96,40 @@ const MovieSearch = () => {
         <button type="submit">Search</button>
       </form>
       <div>
-      <button onClick={handleViewLiked}>Liked Movies</button>
-      <button onClick={handleViewBookmarked}>Bookmarked Movies</button>
-      <button onClick={handleViewRated}>Rated Movies</button>
-      <button onClick={handleViewReviewed}>Reviewed Movies</button>
+      <h2> My Movies </h2>
+      <p>
+      <button onClick={handleView("like")}>Liked</button>
+      <button onClick={handleView("bookmark")}>Bookmarked</button>
+      <button onClick={handleView("rate")}>Rated</button>
+      <button onClick={handleView("review")}>Reviewed</button>
+      </p>
       </div>
       <div>
       {opsMovies.map((om) =>
         <div>
-        <p>Movie: {om.title}({om.release_year}) Added At: {om.activity_time} Detail: {om.detail}</p>
+        <h3>{om.title}({om.release_year})</h3>
+        <p>Added At: {om.activity_time}</p>
+        <p>Detail: {om.detail}</p>
         </div>
       )}
       </div>
       <div>
+        {movies.length > 0 && (<h2> Search Results: </h2>)}
         {movies.map((movie) => (
           <div key={movie._id}>
-            <img src={movie._source.poster_url} alt={movie._source.title} />
-            <h2>{movie._source.title}</h2>
+            <h3>{movie._source.title}</h3>
             <p>Actors: {movie._source.actors}</p>
             <p>Genres: {movie._source.genres}</p>
             <p>Release Year: {movie._source.release_year}</p>
-            <button onClick={() => setSelectedMovie(movie)}>Select</button>
+            <img src={movie._source.poster_url} alt={movie._source.title} />
+            <p><button onClick={() => setSelectedMovie(movie)}>Select</button></p>
             <div>
               <label>
                 Select operation:
                 <select value={selectedOperation} onChange={(event) => handleOperationSelect(event.target.value)}>
                   <option value="like">Like</option>
                   <option value="rate">Rate</option>
-                  <option value="add_review">Add Review</option>
+                  <option value="review">Add Review</option>
                   <option value="bookmark">Bookmark</option>
                 </select>
               </label>
@@ -169,7 +139,7 @@ const MovieSearch = () => {
                   <input type="number" min="1" max="5" onChange={(event) => setOperationInput(event.target.value)} />
                 </label>
               )}
-              {selectedOperation === "add_review" && (
+              {selectedOperation === "review" && (
                 <label>
                   Review:
                   <input type="text" onChange={(event) => setOperationInput(event.target.value)} />

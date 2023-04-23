@@ -88,7 +88,7 @@ def get_movies_by_operation():
             res["detail"] = row[4]
         else:
             if operation == "review":
-                res["detail"] = row[5]
+                res["detail"] = row[4]
             else:
                 res["detail"] = "NA"
         data.append(res)
