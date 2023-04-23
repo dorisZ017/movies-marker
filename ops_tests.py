@@ -8,6 +8,7 @@ import op_utils
 
 class TestOperationUtils(unittest.TestCase):
 
+    # Insert to database with the correct query
     @mock.patch("op_utils.get_conn")
     @mock.patch("op_utils.get_timestamp")
     def test_insert(self, dt_fn, conn_fn):
@@ -25,6 +26,7 @@ class TestOperationUtils(unittest.TestCase):
     )"""
         cursor.execute.assert_called_with(query)
 
+    # Read from database correctly
     @mock.patch("op_utils.get_conn")
     def test_get_bookmarked(self, conn_fn):
         cursor = Mock(Cursor)
@@ -45,6 +47,7 @@ class TestOperationUtils(unittest.TestCase):
         self.assertEqual(res, [
             {"title": "Some Title", "release_year": 2012, "activity_time": "2017-02-20 07:07:03", "detail": "5"}])
 
+    # raise errors if the input is invalid
     def test_invalid_op(self):
         self.assertRaises(Exception, op_utils.insert_operation, {})
         self.assertRaises(Exception, op_utils.insert_operation,

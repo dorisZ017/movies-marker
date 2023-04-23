@@ -9,11 +9,13 @@ import movies_utils
 
 class TestUtils(unittest.TestCase):
 
+    # parse imdb id from imbd url
     def test_parse_imdb(self):
         url = "https://www.imdb.com/title/tt6718170/?pfblah"
         parsed_id = movies_utils.get_id(url)
         self.assertEqual(parsed_id, "tt6718170")
 
+    # fetch poster from OMDB api correctly
     @mock.patch("requests.get")
     def test_fetch_movie(self, mock_get):
         mock_get.return_value.status_code = 200
@@ -23,6 +25,7 @@ class TestUtils(unittest.TestCase):
             {'apikey': ANY, 'i': 'tt6718170'}
         )
 
+    # handle failure
     @mock.patch("requests.get")
     def test_error_handle(self, mock_get):
         mock_get.return_value.status_code = 404
@@ -30,11 +33,13 @@ class TestUtils(unittest.TestCase):
         res = movies_utils.get_imdb_poster("https://www.imdb.com/title/tt6718170/?pfblah", "yy")
         self.assertEqual(res, "")
 
+    # build search query correctly
     def test_search_query(self):
         s = movies_utils.build_search("some_title", year=2000)
         self.assertEqual(len(s.to_dict()["query"]["bool"]["must"]), 2)
 
-    @mock.patch("utils.get_imdb_poster")
+    # parse results correctly
+    @mock.patch("movies_utils.get_imdb_poster")
     def test_parse_movies(self, poster_fn):
         poster_fn.return_value = "some_url"
         resp = AttrDict({
