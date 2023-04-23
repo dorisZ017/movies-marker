@@ -33,7 +33,7 @@ class TestOperationUtils(unittest.TestCase):
         conn = Mock(Connection)
         cursor.fetchall.return_value = [["Some Title", 2012, "2017-02-20 07:07:03", "bookmark", ""]]
         conn_fn.return_value = conn, cursor
-        res = op_utils.get_movies("bookmarked")
+        res = op_utils.get_movies("bookmark")
         self.assertEqual(res, [
             {"title": "Some Title", "release_year": 2012, "activity_time": "2017-02-20 07:07:03", "detail": "NA"}])
 
