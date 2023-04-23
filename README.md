@@ -22,7 +22,7 @@ python setup.py
 Implementation of backend Flask server: `backend_movies.py`
 
 Detailed methods to be used in backend: 
-`movies_utils.py`, `ops_utils.py`
+`movies_utils.py`, `op_utils.py`
 
 
 Unit tests: 
