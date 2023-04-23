@@ -1,6 +1,6 @@
 import elasticsearch
 import yaml
-import utils
+import movies_utils
 import argparse
 
 parser = argparse.ArgumentParser(description="Creating ElasticSearch instance and inserting data")
@@ -16,14 +16,14 @@ es = elasticsearch.Elasticsearch([es_host], timout=30)
 
 try:
     es.indices.create("movies")
-    utils.insert_movies(es, data_file)
+    movies_utils.insert_movies(es, data_file)
 except elasticsearch.exceptions.RequestError as ex:
     if ex.error == 'resource_already_exists_exception':
         if args.overwrite:
             print("Overwriting existing movies database")
             es.indices.delete("movies")
             es.indices.create("movies")
-            utils.insert_movies(es, data_file)
+            movies_utils.insert_movies(es, data_file)
     else:
         raise ex
 
