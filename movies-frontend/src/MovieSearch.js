@@ -12,6 +12,8 @@ const MovieSearch = () => {
   const [operation, setOperation] = useState("");
   const [operationInput, setOperationInput] = useState("");
   const [selectedOperation, setSelectedOperation] = useState("");
+  const [viewOp, setViewOp] = useState("")
+  const [opsMovies, setOpsMovies] = useState([])
 
   const handleSearch = async (event) => {
     event.preventDefault();
@@ -35,24 +37,74 @@ const MovieSearch = () => {
   }
 
   const handleOperationSubmit = async (event) => {
-    console.log("here!")
-    console.log(operation)
+    if (selectedMovie) {
     console.log(operationInput)
-    const res = await axios.post("http://localhost:5000/operation", {
+      const res = await axios.post("http://localhost:5000/add_operation", {
       proxy: {
         host: "cors-proxy.com",
       },
       params: {
       title: selectedMovie._source.title,
+      release_year: selectedMovie._source.release_year,
       operation: operation,
       input: operationInput,
       }
     });
     console.log(res.data);
     setSelectedMovie(null);
-    setOperation("")
     setOperationInput("");
+    }
   };
+
+
+  const handleViewLiked = async (event) => {
+    const res = await axios.get("http://localhost:5000/get_movies", {
+      proxy: {
+        host: "cors-proxy.com",
+      },
+      params: {
+        operation: "like",
+      }
+    });
+    setOpsMovies(res.data);
+  };
+
+  const handleViewBookmarked = async (event) => {
+    const res = await axios.get("http://localhost:5000/get_movies", {
+      proxy: {
+        host: "cors-proxy.com",
+      },
+      params: {
+        operation: "bookmark"
+      }
+    });
+    setOpsMovies(res.data);
+  };
+
+  const handleViewRated = async (event) => {
+    const res = await axios.get("http://localhost:5000/get_movies", {
+      proxy: {
+        host: "cors-proxy.com",
+      },
+      params: {
+        operation: "rate"
+      }
+    });
+    setOpsMovies(res.data);
+  };
+
+  const handleViewReviewed = async (event) => {
+    const res = await axios.get("http://localhost:5000/get_movies", {
+      proxy: {
+        host: "cors-proxy.com",
+      },
+      params: {
+        operation: "review"
+      }
+    });
+    setOpsMovies(res.data);
+  };
+
 
   return (
     <div>
@@ -79,6 +131,19 @@ const MovieSearch = () => {
         <br />
         <button type="submit">Search</button>
       </form>
+      <div>
+      <button onClick={handleViewLiked}>Liked Movies</button>
+      <button onClick={handleViewBookmarked}>Bookmarked Movies</button>
+      <button onClick={handleViewRated}>Rated Movies</button>
+      <button onClick={handleViewReviewed}>Reviewed Movies</button>
+      </div>
+      <div>
+      {opsMovies.map((om) =>
+        <div>
+        <p>Movie: {om.title}({om.release_year}) Added At: {om.activity_time} Detail: {om.detail}</p>
+        </div>
+      )}
+      </div>
       <div>
         {movies.map((movie) => (
           <div key={movie._id}>
